@@ -37,6 +37,8 @@ for f in css_files:
     path = os.path.join(chrome_dir, f)
     css += open(path).read()
 css = css.replace('\n', '')
+if "'" in css:
+    sys.exit('Error: css files can not contain a single-quote, since it will break the generated javascript')
 
 print """// ==UserScript==
 // @name           {n}
@@ -53,5 +55,5 @@ print "// ==/UserScript==\n"
 print "// This script was generated programatically by chromeext_to_greasemonkey.py\n"
 
 print "(function() {"
-print "    GM_addStyle({css});\n".format(css=css)
+print "    GM_addStyle('{css}');\n".format(css=css)
 print "})();"
