@@ -8,6 +8,7 @@ The directory should contain a manifest.json file.
 If manifest.json does not specify an author, the default_author variable will be used.
 """
 
+import cssmin
 import json
 import os
 import sys
@@ -35,10 +36,12 @@ css_files = content_scripts[0]['css']
 css = ''
 for f in css_files:
     path = os.path.join(chrome_dir, f)
-    css += open(path).read()
-css = css.replace('\n', '')
+    css += cssmin.cssmin(open(path).read())
 if "'" in css:
     sys.exit('Error: css files can not contain a single-quote, since it will break the generated javascript')
+if "\n" in css:
+    sys.exit('Error: minified css contains newline.')
+
 
 print """// ==UserScript==
 // @name           {n}
