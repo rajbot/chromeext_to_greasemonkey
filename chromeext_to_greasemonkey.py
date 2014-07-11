@@ -27,11 +27,13 @@ content_scripts = manifest.get('content_scripts')
 if len(content_scripts) != 1:
     sys.exit('Error: this script requires exactly one content_scripts array entry')
 
-if sorted(content_scripts[0].keys()) != [u'css', u'matches']:
-    sys.exit('Error: this script can only handle css files in the content_scripts array')
+for key in content_scripts[0].keys():
+    if key not in [u'css', u'matches', u'js']:
+        sys.exit('Error: this script can only handle css and js files in the content_scripts array')
 
 includes  = content_scripts[0]['matches']
 css_files = content_scripts[0]['css']
+js_files = content_scripts[0]['js']
 
 css = ''
 for f in css_files:
@@ -59,4 +61,10 @@ print "// This script was generated programatically by chromeext_to_greasemonkey
 
 print "(function() {"
 print "    GM_addStyle('{css}');\n".format(css=css)
+
+for f in js_files:
+    path = os.path.join(chrome_dir, f)
+    js = open(path).read()
+    print js
+
 print "})();"
